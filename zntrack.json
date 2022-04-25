@@ -1,6 +1,9 @@
 {
     "download_kaggle": {
-        "outs": "dataset",
+        "outs": {
+            "_type": "pathlib.Path",
+            "value": "dataset"
+        },
         "outs_no_cache": null,
         "outs_persist": null,
         "outs_persist_no_cache": null,
@@ -20,13 +23,13 @@
         "train_data": {
             "_type": "ZnTrackType",
             "value": {
-                "module": "src.DataPreprocessor",
+                "module": "src.process",
                 "cls": "DataPreprocessor",
                 "name": "DataPreprocessor"
             }
         }
     },
-    "data_preprocess_test": {
+    "test_data": {
         "data": {
             "_type": "pathlib.Path",
             "value": "dataset"
@@ -36,15 +39,11 @@
         "ml_model": {
             "_type": "NodeAttribute",
             "value": {
-                "module": "src.MLModel",
+                "module": "src.train",
                 "cls": "MLModel",
                 "name": "MLModel",
                 "attribute": "model",
                 "affected_files": [
-                    {
-                        "_type": "pathlib.Path",
-                        "value": "nodes/MLModel/training_history.csv"
-                    },
                     {
                         "_type": "pathlib.Path",
                         "value": "nodes/MLModel/model"
@@ -52,6 +51,10 @@
                     {
                         "_type": "pathlib.Path",
                         "value": "nodes/MLModel/metrics_no_cache.json"
+                    },
+                    {
+                        "_type": "pathlib.Path",
+                        "value": "nodes/MLModel/training_history.csv"
                     }
                 ]
             }
@@ -59,9 +62,9 @@
         "test_data": {
             "_type": "ZnTrackType",
             "value": {
-                "module": "src.DataPreprocessor",
+                "module": "src.process",
                 "cls": "DataPreprocessor",
-                "name": "data_preprocess_test"
+                "name": "test_data"
             }
         }
     }

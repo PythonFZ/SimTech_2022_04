@@ -1,11 +1,7 @@
 schema: '2.0'
 stages:
   download_kaggle:
-    cmd: 'python3 -c "from src.download_kaggle import download_kaggle; download_kaggle(exec_func=True)" '
-    deps:
-    - path: src/download_kaggle.py
-      md5: 707a3a4fb225fcb31febe8ee735f35ac
-      size: 617
+    cmd: 'python -c "from src.download import download_kaggle; download_kaggle(exec_func=True)" '
     params:
       params.yaml:
         download_kaggle:
@@ -16,16 +12,13 @@ stages:
       size: 210857086
       nfiles: 7
   DataPreprocessor:
-    cmd: "python3 -c \"from src.DataPreprocessor import DataPreprocessor; DataPreprocessor.load(name='DataPreprocessor').run_and_save()\"\
+    cmd: "python -c \"from src.process import DataPreprocessor; DataPreprocessor.load(name='DataPreprocessor').run_and_save()\"\
       \ "
     deps:
     - path: dataset
       md5: dce5ff47d2f83a726e773d58bc663eee.dir
       size: 210857086
       nfiles: 7
-    - path: src/DataPreprocessor.py
-      md5: e9b6688f2803365405829628ab3efcdd
-      size: 1609
     params:
       params.yaml:
         DataPreprocessor:
@@ -33,7 +26,7 @@ stages:
     outs:
     - path: nodes/DataPreprocessor/outs.json
       md5: 91bf7e1e8916a86ada5cccd6cfe0acf1
-      size: 233258180
+      size: 233258189
   data_preprocess_test:
     cmd: "python3 -c \"from src.DataPreprocessor import DataPreprocessor; DataPreprocessor.load(name='data_preprocess_test').run_and_save()\"\
       \ "
@@ -43,8 +36,8 @@ stages:
       size: 210857086
       nfiles: 7
     - path: src/DataPreprocessor.py
-      md5: e9b6688f2803365405829628ab3efcdd
-      size: 1609
+      md5: 2d68eeed3da20f673103b5e45b217607
+      size: 1610
     params:
       params.yaml:
         data_preprocess_test:
@@ -54,59 +47,69 @@ stages:
       md5: 5eb9c135aeb36ebe84979901c29d648f
       size: 60933812
   MLModel:
-    cmd: "python3 -c \"from src.MLModel import MLModel; MLModel.load(name='MLModel').run_and_save()\"\
+    cmd: "python -c \"from src.train import MLModel; MLModel.load(name='MLModel').run_and_save()\"\
       \ "
     deps:
     - path: nodes/DataPreprocessor/outs.json
       md5: 91bf7e1e8916a86ada5cccd6cfe0acf1
       size: 233258180
-    - path: src/MLModel.py
-      md5: 5153c6fa70dd3551ed5867352f90c027
-      size: 4646
     params:
       params.yaml:
         MLModel:
           dense:
-          - 64
-          epochs: 3
+          - 4
+          epochs: 10
           filters:
-          - 64
-          - 64
+          - 4
+          optimizer: adam
     outs:
     - path: nodes/MLModel/metrics_no_cache.json
-      md5: 0b4844f7eea3a3ef640c7891924117a1
-      size: 183
+      md5: db620041cf0b8cf175a95a2341c5be45
+      size: 194
     - path: nodes/MLModel/model
-      md5: d96115634f6613734c87d0b492deec5c.dir
-      size: 9780835
+      md5: ae83907bb4ee913483077949371063d7.dir
+      size: 158676
       nfiles: 4
     - path: nodes/MLModel/training_history.csv
-      md5: 53b22eb95436e40c299d1ed24b48815c
-      size: 271
+      md5: 862bfa1f3d8e20dd6925e6e15716e59c
+      size: 844
   EvaluateModel:
-    cmd: "python3 -c \"from src.EvaluateModel import EvaluateModel; EvaluateModel.load(name='EvaluateModel').run_and_save()\"\
+    cmd: "python -c \"from src.evaluate import EvaluateModel; EvaluateModel.load(name='EvaluateModel').run_and_save()\"\
       \ "
     deps:
     - path: nodes/MLModel/metrics_no_cache.json
-      md5: 0b4844f7eea3a3ef640c7891924117a1
-      size: 183
+      md5: db620041cf0b8cf175a95a2341c5be45
+      size: 194
     - path: nodes/MLModel/model
-      md5: d96115634f6613734c87d0b492deec5c.dir
-      size: 9780835
+      md5: ae83907bb4ee913483077949371063d7.dir
+      size: 158676
       nfiles: 4
     - path: nodes/MLModel/training_history.csv
-      md5: 53b22eb95436e40c299d1ed24b48815c
-      size: 271
-    - path: nodes/data_preprocess_test/outs.json
+      md5: 862bfa1f3d8e20dd6925e6e15716e59c
+      size: 844
+    - path: nodes/test_data/outs.json
       md5: 5eb9c135aeb36ebe84979901c29d648f
-      size: 60933812
-    - path: src/EvaluateModel.py
-      md5: 9a684d1cc880e889757f0f3d844a673f
-      size: 5335
+      size: 60933821
     outs:
     - path: nodes/EvaluateModel/confusion_matrix.csv
-      md5: 13aa7bfd599b8d6b67f2c94403345908
-      size: 71646
+      md5: 534650b027951608be75ae9aa99a9dde
+      size: 79881
     - path: nodes/EvaluateModel/metrics_no_cache.json
-      md5: b2325c403ab9fa9a8ae90711b5cb5d4b
-      size: 101
+      md5: 79e89c3d13faeb68ec615ae22cb91eab
+      size: 107
+  test_data:
+    cmd: "python -c \"from src.process import DataPreprocessor; DataPreprocessor.load(name='test_data').run_and_save()\"\
+      \ "
+    deps:
+    - path: dataset
+      md5: dce5ff47d2f83a726e773d58bc663eee.dir
+      size: 210857086
+      nfiles: 7
+    params:
+      params.yaml:
+        test_data:
+          dataset: sign_mnist_test
+    outs:
+    - path: nodes/test_data/outs.json
+      md5: 5eb9c135aeb36ebe84979901c29d648f
+      size: 60933821
