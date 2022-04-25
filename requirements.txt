@@ -1,0 +1,7 @@
+zntrack
+kaggle
+tensorflow
+matplotlib
+pandas
+numpy
+dvc["s3"]

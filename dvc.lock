@@ -1,0 +1,112 @@
+schema: '2.0'
+stages:
+  download_kaggle:
+    cmd: 'python3 -c "from src.download_kaggle import download_kaggle; download_kaggle(exec_func=True)" '
+    deps:
+    - path: src/download_kaggle.py
+      md5: 707a3a4fb225fcb31febe8ee735f35ac
+      size: 617
+    params:
+      params.yaml:
+        download_kaggle:
+          dataset: datamunge/sign-language-mnist
+    outs:
+    - path: dataset
+      md5: dce5ff47d2f83a726e773d58bc663eee.dir
+      size: 210857086
+      nfiles: 7
+  DataPreprocessor:
+    cmd: "python3 -c \"from src.DataPreprocessor import DataPreprocessor; DataPreprocessor.load(name='DataPreprocessor').run_and_save()\"\
+      \ "
+    deps:
+    - path: dataset
+      md5: dce5ff47d2f83a726e773d58bc663eee.dir
+      size: 210857086
+      nfiles: 7
+    - path: src/DataPreprocessor.py
+      md5: e9b6688f2803365405829628ab3efcdd
+      size: 1609
+    params:
+      params.yaml:
+        DataPreprocessor:
+          dataset: sign_mnist_train
+    outs:
+    - path: nodes/DataPreprocessor/outs.json
+      md5: 91bf7e1e8916a86ada5cccd6cfe0acf1
+      size: 233258180
+  data_preprocess_test:
+    cmd: "python3 -c \"from src.DataPreprocessor import DataPreprocessor; DataPreprocessor.load(name='data_preprocess_test').run_and_save()\"\
+      \ "
+    deps:
+    - path: dataset
+      md5: dce5ff47d2f83a726e773d58bc663eee.dir
+      size: 210857086
+      nfiles: 7
+    - path: src/DataPreprocessor.py
+      md5: e9b6688f2803365405829628ab3efcdd
+      size: 1609
+    params:
+      params.yaml:
+        data_preprocess_test:
+          dataset: sign_mnist_test
+    outs:
+    - path: nodes/data_preprocess_test/outs.json
+      md5: 5eb9c135aeb36ebe84979901c29d648f
+      size: 60933812
+  MLModel:
+    cmd: "python3 -c \"from src.MLModel import MLModel; MLModel.load(name='MLModel').run_and_save()\"\
+      \ "
+    deps:
+    - path: nodes/DataPreprocessor/outs.json
+      md5: 91bf7e1e8916a86ada5cccd6cfe0acf1
+      size: 233258180
+    - path: src/MLModel.py
+      md5: 5153c6fa70dd3551ed5867352f90c027
+      size: 4646
+    params:
+      params.yaml:
+        MLModel:
+          dense:
+          - 64
+          epochs: 3
+          filters:
+          - 64
+          - 64
+    outs:
+    - path: nodes/MLModel/metrics_no_cache.json
+      md5: 0b4844f7eea3a3ef640c7891924117a1
+      size: 183
+    - path: nodes/MLModel/model
+      md5: d96115634f6613734c87d0b492deec5c.dir
+      size: 9780835
+      nfiles: 4
+    - path: nodes/MLModel/training_history.csv
+      md5: 53b22eb95436e40c299d1ed24b48815c
+      size: 271
+  EvaluateModel:
+    cmd: "python3 -c \"from src.EvaluateModel import EvaluateModel; EvaluateModel.load(name='EvaluateModel').run_and_save()\"\
+      \ "
+    deps:
+    - path: nodes/MLModel/metrics_no_cache.json
+      md5: 0b4844f7eea3a3ef640c7891924117a1
+      size: 183
+    - path: nodes/MLModel/model
+      md5: d96115634f6613734c87d0b492deec5c.dir
+      size: 9780835
+      nfiles: 4
+    - path: nodes/MLModel/training_history.csv
+      md5: 53b22eb95436e40c299d1ed24b48815c
+      size: 271
+    - path: nodes/data_preprocess_test/outs.json
+      md5: 5eb9c135aeb36ebe84979901c29d648f
+      size: 60933812
+    - path: src/EvaluateModel.py
+      md5: 9a684d1cc880e889757f0f3d844a673f
+      size: 5335
+    outs:
+    - path: nodes/EvaluateModel/confusion_matrix.csv
+      md5: 13aa7bfd599b8d6b67f2c94403345908
+      size: 71646
+    - path: nodes/EvaluateModel/metrics_no_cache.json
+      md5: b2325c403ab9fa9a8ae90711b5cb5d4b
+      size: 101

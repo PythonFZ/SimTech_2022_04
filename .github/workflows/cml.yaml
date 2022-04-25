@@ -1,0 +1,65 @@
+name: CML
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: iterative/setup-cml@v1
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Setup Git User
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+      - name: Install Python Requirements
+        run: |
+          pip install -r requirements.txt
+      - name: Run stage
+        env:
+          ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+          SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY}}
+        run: |
+          cml ci --unshallow
+          dvc pull --run-cache
+          dvc repro
+      - name: CML Publish Results
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+          SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY}}
+        run: |
+          CIREVISION=$(git rev-parse HEAD)
+          BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          git add .
+          git commit -m "CML auto commit"
+          git checkout -b "cml_${CIREVISION:0:10}"
+          git push --set-upstream origin "cml_${CIREVISION:0:10}"
+          git push
+          dvc push
+          gh pr create --fill --base $BRANCH
+          
+          gh pr merge --rebase "cml_${CIREVISION:0:10}"
+          
+          echo "# Report" >> report.md
+          echo "## Computed Metrics"
+          dvc metrics show --md >> report.md
+          echo "## Confusion Matrix" >> report.md
+          
+          dvc plots show nodes/EvaluateModel/confusion_matrix.csv \
+            --template confusion \
+            -x predicted \
+            -y actual \
+            --show-vega master > vega.json
+          
+          vl2png vega.json -s 1.5 | cml publish --md >> report.md
+          
+          cml-send-comment report.md --commit-sha=$CIREVISION
