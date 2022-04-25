@@ -62,7 +62,7 @@ jobs:
             --template confusion \
             -x predicted \
             -y actual \
-            --show-vega master > vega.json
+            --show-vega > vega.json
           
           vl2png vega.json -s 1.5 | cml publish --md >> report.md
           
