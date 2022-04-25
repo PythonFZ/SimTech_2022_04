@@ -15,10 +15,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
-      - name: Setup Git User
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
       - name: Install Python Requirements
         run: |
           pip install -r requirements.txt
@@ -32,7 +28,9 @@ jobs:
           dvc remote modify --local myremote access_key_id ${{ secrets.ACCESS_KEY_ID }}
           dvc remote modify --local myremote secret_access_key ${{ secrets.SECRET_ACCESS_KEY}}
           
+          # https://cml.dev/doc/ref/ci
           cml ci --unshallow
+
           dvc pull --run-cache
           dvc repro
       - name: CML Publish Results
@@ -42,6 +40,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # used by GH CLI
         run: |
+          dvc push
+
           CIREVISION=$(git rev-parse HEAD)
           BRANCH=$(git rev-parse --abbrev-ref HEAD)
           git add .
@@ -49,7 +49,8 @@ jobs:
           git checkout -b "cml_${CIREVISION:0:10}"
           git push --set-upstream origin "cml_${CIREVISION:0:10}"
           git push
-          dvc push
+          # if git fails, usually the params are identical and dvc.lock did not change
+          
           gh pr create --fill --base $BRANCH
           
           gh pr merge --rebase "cml_${CIREVISION:0:10}"
