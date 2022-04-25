@@ -24,10 +24,11 @@ jobs:
           pip install -r requirements.txt
       - name: Run stage
         env:
-          ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
-          SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY}}
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          dvc remote modify --local myremote access_key_id ${{ secrets.ACCESS_KEY_ID }}
+          dvc remote modify --local myremote secret_access_key ${{ secrets.SECRET_ACCESS_KEY}}
+          
           cml ci --unshallow
           dvc pull --run-cache
           dvc repro
