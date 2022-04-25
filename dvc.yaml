@@ -1,28 +1,24 @@
 stages:
   download_kaggle:
-    cmd: 'python3 -c "from src.download_kaggle import download_kaggle; download_kaggle(exec_func=True)" '
-    deps:
-    - src/download_kaggle.py
+    cmd: 'python -c "from src.download import download_kaggle; download_kaggle(exec_func=True)" '
     params:
     - download_kaggle
     outs:
     - dataset
   DataPreprocessor:
-    cmd: "python3 -c \"from src.DataPreprocessor import DataPreprocessor; DataPreprocessor.load(name='DataPreprocessor').run_and_save()\"\
+    cmd: "python -c \"from src.process import DataPreprocessor; DataPreprocessor.load(name='DataPreprocessor').run_and_save()\"\
       \ "
     deps:
     - dataset
-    - src/DataPreprocessor.py
     params:
     - DataPreprocessor
     outs:
     - nodes/DataPreprocessor/outs.json
   MLModel:
-    cmd: "python3 -c \"from src.MLModel import MLModel; MLModel.load(name='MLModel').run_and_save()\"\
+    cmd: "python -c \"from src.train import MLModel; MLModel.load(name='MLModel').run_and_save()\"\
       \ "
     deps:
     - nodes/DataPreprocessor/outs.json
-    - src/MLModel.py
     params:
     - MLModel
     outs:
@@ -33,29 +29,29 @@ stages:
     plots:
     - nodes/MLModel/training_history.csv:
         cache: false
-  data_preprocess_test:
-    cmd: "python3 -c \"from src.DataPreprocessor import DataPreprocessor; DataPreprocessor.load(name='data_preprocess_test').run_and_save()\"\
+  test_data:
+    cmd: "python -c \"from src.process import DataPreprocessor; DataPreprocessor.load(name='test_data').run_and_save()\"\
       \ "
     deps:
     - dataset
-    - src/DataPreprocessor.py
     params:
-    - data_preprocess_test
+    - test_data
     outs:
-    - nodes/data_preprocess_test/outs.json
+    - nodes/test_data/outs.json
   EvaluateModel:
-    cmd: "python3 -c \"from src.EvaluateModel import EvaluateModel; EvaluateModel.load(name='EvaluateModel').run_and_save()\"\
+    cmd: "python -c \"from src.evaluate import EvaluateModel; EvaluateModel.load(name='EvaluateModel').run_and_save()\"\
       \ "
     deps:
     - nodes/MLModel/metrics_no_cache.json
     - nodes/MLModel/model
     - nodes/MLModel/training_history.csv
-    - nodes/data_preprocess_test/outs.json
-    - src/EvaluateModel.py
+    - nodes/test_data/outs.json
     metrics:
     - nodes/EvaluateModel/metrics_no_cache.json:
         cache: false
     plots:
     - nodes/EvaluateModel/confusion_matrix.csv:
         cache: false
-    always_changed: true
+        template: confusion
+        x: predicted
+        y: actual

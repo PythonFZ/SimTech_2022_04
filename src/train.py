@@ -1,58 +1,10 @@
-from zntrack import config
 import pathlib
-import kaggle
-import matplotlib.pyplot as plt
-import numpy as np
+
 import pandas as pd
 from tensorflow import keras
 from tensorflow.keras import layers
-from tensorflow.keras.utils import to_categorical
-from zntrack import Node, NodeConfig, dvc, nodify, utils, zn
+from zntrack import Node, utils, zn
 from zntrack.core import ZnTrackOption
-
-
-@nodify(
-    outs="dataset",
-    params={"dataset": "datamunge/sign-language-mnist"}
-)
-def download_kaggle(cfg: NodeConfig):
-    """Download dataset from kaggle"""
-    kaggle.api.dataset_download_files(
-        dataset=cfg.params.dataset, path=cfg.outs, unzip=True
-    )
-
-
-class DataPreprocessor(Node):
-    """Prepare kaggle dataset for training
-
-    * normalize and reshape the features
-    * one-hot encode the labels
-    """
-    # dependecies and parameters
-    data: pathlib.Path = dvc.deps(pathlib.Path("dataset"))
-    dataset = zn.params("sign_mnist_train")
-    # outputs
-    features: np.ndarray = zn.outs()
-    labels: np.ndarray = zn.outs()
-
-    def run(self):
-        """Primary Node Method"""
-        df = pd.read_csv((self.data / self.dataset / self.dataset).with_suffix(".csv"))
-
-        self.labels = df.values[:, 0]
-        self.labels = to_categorical(self.labels)
-        self.features = df.values[:, 1:]
-
-        self.normalize_and_scale_data()
-
-    def normalize_and_scale_data(self):
-        self.features = self.features / 255
-        self.features = self.features.reshape((-1, 28, 28, 1))
-
-    def plot_image(self, index):
-        plt.imshow(self.features[index])
-        plt.title(f"Label {self.labels[index].argmax()}")
-        plt.show()
 
 
 class TFModel(ZnTrackOption):
@@ -76,17 +28,9 @@ class TFModel(ZnTrackOption):
         return model
 
 
-# with this custom Type we can define `model = TFModel()` and use it similar to the other `zn.<options>` but passing it a TensorFlow model.
-# Note: You can also register a custom `znjson` de/serializer and use `zn.outs` instead.
-# 
-# In this simple example we only define the epochs as parameters. For a more advanced Node you would try to catch all parameters, such as layer types, neurons, ... as `zn.params`.
-
-# In[7]:
-
-
 class MLModel(Node):
     # dependencies
-    train_data: DataPreprocessor = zn.deps(DataPreprocessor)
+    train_data = zn.deps()
     # outputs
     training_history = zn.plots()
     metrics = zn.metrics()
@@ -94,14 +38,9 @@ class MLModel(Node):
     model = TFModel()
     # parameter
     epochs = zn.params()
-    filters = zn.params([64, 64])
-    dense = zn.params([64])
-
-    def __init__(self, epochs: int = 3, **kwargs):
-        super().__init__(**kwargs)
-        self.epochs = epochs
-
-        self.optimizer = "adam"
+    filters = zn.params([4])
+    dense = zn.params([4])
+    optimizer = zn.params("adam")
 
     def run(self):
         """Primary Node Method"""
@@ -135,7 +74,7 @@ class MLModel(Node):
 
         inputs = keras.Input(shape=(28, 28, 1))
         cargo = inputs
-        for filters in self.filters[:-1]:
+        for filters in self.filters:
             cargo = layers.Conv2D(
                 filters=filters, kernel_size=(3, 3), padding="same", activation="relu"
             )(cargo)
@@ -149,4 +88,3 @@ class MLModel(Node):
         output = layers.Dense(25, activation="softmax")(cargo)
 
         self.model = keras.Model(inputs=inputs, outputs=output)
-
