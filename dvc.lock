@@ -24,8 +24,8 @@ stages:
       size: 210857086
       nfiles: 7
     - path: src/DataPreprocessor.py
-      md5: e9b6688f2803365405829628ab3efcdd
-      size: 1609
+      md5: 2d68eeed3da20f673103b5e45b217607
+      size: 1610
     params:
       params.yaml:
         DataPreprocessor:
@@ -43,8 +43,8 @@ stages:
       size: 210857086
       nfiles: 7
     - path: src/DataPreprocessor.py
-      md5: e9b6688f2803365405829628ab3efcdd
-      size: 1609
+      md5: 2d68eeed3da20f673103b5e45b217607
+      size: 1610
     params:
       params.yaml:
         data_preprocess_test:
@@ -61,52 +61,51 @@ stages:
       md5: 91bf7e1e8916a86ada5cccd6cfe0acf1
       size: 233258180
     - path: src/MLModel.py
-      md5: 5153c6fa70dd3551ed5867352f90c027
-      size: 4646
+      md5: a4f8eda039186d216d92b3b43d475d60
+      size: 4636
     params:
       params.yaml:
         MLModel:
           dense:
-          - 64
+          - 4
           epochs: 3
           filters:
-          - 64
-          - 64
+          - 4
     outs:
     - path: nodes/MLModel/metrics_no_cache.json
-      md5: 0b4844f7eea3a3ef640c7891924117a1
-      size: 183
+      md5: f43a5ab8d7a4baa5a4a292cab32c900e
+      size: 185
     - path: nodes/MLModel/model
-      md5: d96115634f6613734c87d0b492deec5c.dir
-      size: 9780835
+      md5: 88ad740bb41e8bbf6b8d808470e2bea0.dir
+      size: 158691
       nfiles: 4
     - path: nodes/MLModel/training_history.csv
-      md5: 53b22eb95436e40c299d1ed24b48815c
-      size: 271
+      md5: 9d04d4a828cb5cebc6f1bdf0a4954415
+      size: 278
   EvaluateModel:
     cmd: "python3 -c \"from src.EvaluateModel import EvaluateModel; EvaluateModel.load(name='EvaluateModel').run_and_save()\"\
       \ "
     deps:
     - path: nodes/MLModel/metrics_no_cache.json
-      md5: 0b4844f7eea3a3ef640c7891924117a1
-      size: 183
+      md5: f43a5ab8d7a4baa5a4a292cab32c900e
+      size: 185
     - path: nodes/MLModel/model
-      md5: d96115634f6613734c87d0b492deec5c.dir
-      size: 9780835
+      md5: 88ad740bb41e8bbf6b8d808470e2bea0.dir
+      size: 158691
       nfiles: 4
     - path: nodes/MLModel/training_history.csv
-      md5: 53b22eb95436e40c299d1ed24b48815c
-      size: 271
+      md5: 9d04d4a828cb5cebc6f1bdf0a4954415
+      size: 278
     - path: nodes/data_preprocess_test/outs.json
       md5: 5eb9c135aeb36ebe84979901c29d648f
       size: 60933812
     - path: src/EvaluateModel.py
-      md5: 9a684d1cc880e889757f0f3d844a673f
-      size: 5335
+      md5: 774a7ca3971b444da131ec675a2b55d4
+      size: 5370
     outs:
     - path: nodes/EvaluateModel/confusion_matrix.csv
-      md5: 13aa7bfd599b8d6b67f2c94403345908
-      size: 71646
+      md5: a66191e33be69fd84408dfb01fd9c151
+      size: 71665
     - path: nodes/EvaluateModel/metrics_no_cache.json
-      md5: b2325c403ab9fa9a8ae90711b5cb5d4b
+      md5: 8c5a26d1ece9b8bbccda2f95644c4e9f
       size: 101

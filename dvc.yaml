@@ -58,4 +58,7 @@ stages:
     plots:
     - nodes/EvaluateModel/confusion_matrix.csv:
         cache: false
+        template: confusion
+        x: predicted
+        y: actual
     always_changed: true

@@ -15,27 +15,35 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
-      - name: Setup Git User
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
       - name: Install Python Requirements
         run: |
           pip install -r requirements.txt
-      - name: Run stage
-        env:
-          ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
-          SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY}}
-        run: |
-          cml ci --unshallow
-          dvc pull --run-cache
-          dvc repro
-      - name: CML Publish Results
+          npm install canvas
+      - name: Set Credentials and Pull Data
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_TOKEN: ${{ github.token }}
-          ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
-          SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY}}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+        run: |
+          dvc remote modify --local myremote access_key_id ${{ secrets.ACCESS_KEY_ID }}
+          dvc remote modify --local myremote secret_access_key ${{ secrets.SECRET_ACCESS_KEY}}
+          
+          # https://cml.dev/doc/ref/ci
+          cml ci --unshallow
+
+          dvc pull --run-cache
+      - name: Run Stage
+        run: |
+          dvc repro
+      - name: DVC Push to remote
+        run: |
+          dvc push
+      - name: Make PR and CML Publish Results
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # used by CML
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # used by GH CLI
         run: |
           CIREVISION=$(git rev-parse HEAD)
           BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -44,7 +52,8 @@ jobs:
           git checkout -b "cml_${CIREVISION:0:10}"
           git push --set-upstream origin "cml_${CIREVISION:0:10}"
           git push
-          dvc push
+          # if git fails, usually the params are identical and dvc.lock did not change
+          
           gh pr create --fill --base $BRANCH
           
           gh pr merge --rebase "cml_${CIREVISION:0:10}"
@@ -54,12 +63,10 @@ jobs:
           dvc metrics show --md >> report.md
           echo "## Confusion Matrix" >> report.md
           
-          dvc plots show nodes/EvaluateModel/confusion_matrix.csv \
-            --template confusion \
-            -x predicted \
-            -y actual \
-            --show-vega master > vega.json
+          dvc plots show nodes/EvaluateModel/confusion_matrix.csv --show-vega > vega.json
           
-          vl2png vega.json -s 1.5 | cml publish --md >> report.md
+          vl2png vega.json -s 1.5 > vega.png
+          
+          cml-publish vega.png --md  >> report.md
           
           cml-send-comment report.md --commit-sha=$CIREVISION

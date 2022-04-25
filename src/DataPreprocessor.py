@@ -28,7 +28,7 @@ class DataPreprocessor(Node):
     * normalize and reshape the features
     * one-hot encode the labels
     """
-    # dependecies and parameters
+    # dependencies and parameters
     data: pathlib.Path = dvc.deps(pathlib.Path("dataset"))
     dataset = zn.params("sign_mnist_train")
     # outputs
