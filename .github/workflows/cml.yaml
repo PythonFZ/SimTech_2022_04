@@ -64,6 +64,6 @@ jobs:
             -y actual \
             --show-vega > vega.json
           
-          vl2png vega.json -s 1.5 | cml publish --md >> report.md
+          vl2png vega.json -s 1.5 | cml-publish --md  >> report.md
           
           cml-send-comment report.md --commit-sha=$CIREVISION
