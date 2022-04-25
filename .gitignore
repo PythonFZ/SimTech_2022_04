@@ -1,3 +1,4 @@
 /dataset
 /dvc_plots
 .idea/
+__pycache__/
