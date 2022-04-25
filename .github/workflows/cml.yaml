@@ -37,6 +37,9 @@ jobs:
       - name: CML Publish Results
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # used by DVC
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # used by GH CLI
         run: |
           CIREVISION=$(git rev-parse HEAD)
           BRANCH=$(git rev-parse --abbrev-ref HEAD)
