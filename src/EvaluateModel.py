@@ -28,7 +28,7 @@ class DataPreprocessor(Node):
     * normalize and reshape the features
     * one-hot encode the labels
     """
-    # dependecies and parameters
+    # dependencies and parameters
     data: pathlib.Path = dvc.deps(pathlib.Path("dataset"))
     dataset = zn.params("sign_mnist_train")
     # outputs
@@ -81,7 +81,7 @@ class TFModel(ZnTrackOption):
 # 
 # In this simple example we only define the epochs as parameters. For a more advanced Node you would try to catch all parameters, such as layer types, neurons, ... as `zn.params`.
 
-# In[17]:
+# In[7]:
 
 
 class MLModel(Node):
@@ -94,8 +94,8 @@ class MLModel(Node):
     model = TFModel()
     # parameter
     epochs = zn.params()
-    filters = zn.params([64, 64])
-    dense = zn.params([64])
+    filters = zn.params([4])
+    dense = zn.params([4])
 
     def __init__(self, epochs: int = 3, **kwargs):
         super().__init__(**kwargs)
@@ -135,7 +135,7 @@ class MLModel(Node):
 
         inputs = keras.Input(shape=(28, 28, 1))
         cargo = inputs
-        for filters in self.filters[:-1]:
+        for filters in self.filters:
             cargo = layers.Conv2D(
                 filters=filters, kernel_size=(3, 3), padding="same", activation="relu"
             )(cargo)
@@ -156,7 +156,7 @@ class EvaluateModel(Node):
     test_data: DataPreprocessor = zn.deps()
     # metrics
     metrics = zn.metrics()
-    confusion_matrix = zn.plots()
+    confusion_matrix = zn.plots(template="confusion",x="predicted", y="actual")
 
     def run(self):
         """Primary Node Method"""

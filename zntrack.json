@@ -43,15 +43,15 @@
                 "affected_files": [
                     {
                         "_type": "pathlib.Path",
+                        "value": "nodes/MLModel/metrics_no_cache.json"
+                    },
+                    {
+                        "_type": "pathlib.Path",
                         "value": "nodes/MLModel/training_history.csv"
                     },
                     {
                         "_type": "pathlib.Path",
                         "value": "nodes/MLModel/model"
-                    },
-                    {
-                        "_type": "pathlib.Path",
-                        "value": "nodes/MLModel/metrics_no_cache.json"
                     }
                 ]
             }
