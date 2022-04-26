@@ -61,4 +61,3 @@ stages:
         template: confusion
         x: predicted
         y: actual
-    always_changed: true
