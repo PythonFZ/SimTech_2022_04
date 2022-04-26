@@ -57,46 +57,46 @@ stages:
       params.yaml:
         MLModel:
           dense:
-          - 4
+          - 32
           epochs: 20
           filters:
-          - 4
+          - 32
           optimizer: adam
     outs:
     - path: nodes/MLModel/metrics_no_cache.json
-      md5: a23a182f556e37985fedd6e9b237f1b7
-      size: 186
+      md5: 56e5597328b76596d5cdb2b736833156
+      size: 190
     - path: nodes/MLModel/model
-      md5: b35fd431d749eb3ee4931efe72fd52a3.dir
-      size: 158676
+      md5: fcd0063b194513b4fecd50a6f43eb840.dir
+      size: 2541626
       nfiles: 4
     - path: nodes/MLModel/training_history.csv
-      md5: a831f546a69e6e5f9e91efea478a7dc7
-      size: 1640
+      md5: 4ee0834f65d99210fe7f5ef0ffffaf20
+      size: 1659
   EvaluateModel:
     cmd: "python -c \"from src.evaluate import EvaluateModel; EvaluateModel.load(name='EvaluateModel').run_and_save()\"\
       \ "
     deps:
     - path: nodes/MLModel/metrics_no_cache.json
-      md5: a23a182f556e37985fedd6e9b237f1b7
-      size: 186
+      md5: 56e5597328b76596d5cdb2b736833156
+      size: 190
     - path: nodes/MLModel/model
-      md5: b35fd431d749eb3ee4931efe72fd52a3.dir
-      size: 158676
+      md5: fcd0063b194513b4fecd50a6f43eb840.dir
+      size: 2541626
       nfiles: 4
     - path: nodes/MLModel/training_history.csv
-      md5: a831f546a69e6e5f9e91efea478a7dc7
-      size: 1640
+      md5: 4ee0834f65d99210fe7f5ef0ffffaf20
+      size: 1659
     - path: nodes/test_data/outs.json
       md5: 5eb9c135aeb36ebe84979901c29d648f
       size: 60933821
     outs:
     - path: nodes/EvaluateModel/confusion_matrix.csv
-      md5: 97b63f00f9c3e5d2b98575dc003840a8
-      size: 74670
+      md5: 2f2b1aabdf8eef7b723d0cd7a42e1bb8
+      size: 71436
     - path: nodes/EvaluateModel/metrics_no_cache.json
-      md5: b7efccebd02da8ca8f964d66cdb5e1ee
-      size: 103
+      md5: 113b1b561eed9d0e2b854e18053a19d8
+      size: 100
   test_data:
     cmd: "python -c \"from src.process import DataPreprocessor; DataPreprocessor.load(name='test_data').run_and_save()\"\
       \ "
