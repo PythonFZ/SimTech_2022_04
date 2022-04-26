@@ -2,9 +2,10 @@ DataPreprocessor:
     dataset: sign_mnist_train
 MLModel:
     dense:
-    - 32
+    - 64
     epochs: 20
     filters:
+    - 32
     - 32
     optimizer: adam
 download_kaggle:
