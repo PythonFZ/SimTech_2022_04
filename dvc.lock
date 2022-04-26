@@ -60,43 +60,43 @@ stages:
           - 8
           epochs: 10
           filters:
-          - 8
+          - 4
           optimizer: adam
     outs:
     - path: nodes/MLModel/metrics_no_cache.json
-      md5: 06c0d6e736b21b391b03957e015a1c44
+      md5: df55fc05319ed3197727978a2d244142
       size: 185
     - path: nodes/MLModel/model
-      md5: ece6129095c1f198aa205f34a60a5755.dir
-      size: 273320
+      md5: 50b46bc2a775ab7f3a70d481e38e5d9f.dir
+      size: 197574
       nfiles: 4
     - path: nodes/MLModel/training_history.csv
-      md5: c8b8b80516e9e372979f8163fc4cacd6
-      size: 824
+      md5: 7046001b2060f88b5493aaf320af1a20
+      size: 823
   EvaluateModel:
     cmd: "python -c \"from src.evaluate import EvaluateModel; EvaluateModel.load(name='EvaluateModel').run_and_save()\"\
       \ "
     deps:
     - path: nodes/MLModel/metrics_no_cache.json
-      md5: 06c0d6e736b21b391b03957e015a1c44
+      md5: df55fc05319ed3197727978a2d244142
       size: 185
     - path: nodes/MLModel/model
-      md5: ece6129095c1f198aa205f34a60a5755.dir
-      size: 273320
+      md5: 50b46bc2a775ab7f3a70d481e38e5d9f.dir
+      size: 197574
       nfiles: 4
     - path: nodes/MLModel/training_history.csv
-      md5: c8b8b80516e9e372979f8163fc4cacd6
-      size: 824
+      md5: 7046001b2060f88b5493aaf320af1a20
+      size: 823
     - path: nodes/test_data/outs.json
       md5: 5eb9c135aeb36ebe84979901c29d648f
       size: 60933821
     outs:
     - path: nodes/EvaluateModel/confusion_matrix.csv
-      md5: b94ca90e41b4b2b1af31c99d63b4551f
-      size: 71395
+      md5: f7452f69134995dff70ff166442f23a2
+      size: 71530
     - path: nodes/EvaluateModel/metrics_no_cache.json
-      md5: 398916f904d5c5e87562ef3f65800982
-      size: 101
+      md5: 04d9ffd7d7025743082c554136c0fae5
+      size: 100
   test_data:
     cmd: "python -c \"from src.process import DataPreprocessor; DataPreprocessor.load(name='test_data').run_and_save()\"\
       \ "
