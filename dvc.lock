@@ -57,45 +57,46 @@ stages:
       params.yaml:
         MLModel:
           dense:
-          - 32
+          - 64
           epochs: 20
           filters:
+          - 32
           - 32
           optimizer: adam
     outs:
     - path: nodes/MLModel/metrics_no_cache.json
-      md5: 56e5597328b76596d5cdb2b736833156
-      size: 190
+      md5: 369f751aad9b6138f96297355e0a53d3
+      size: 163
     - path: nodes/MLModel/model
-      md5: fcd0063b194513b4fecd50a6f43eb840.dir
-      size: 2541626
+      md5: 6a8da9f8608ccb5061e0e813f320bd0f.dir
+      size: 1491261
       nfiles: 4
     - path: nodes/MLModel/training_history.csv
-      md5: 4ee0834f65d99210fe7f5ef0ffffaf20
-      size: 1659
+      md5: 631851438ba2a354524c7816ad93ef05
+      size: 1314
   EvaluateModel:
     cmd: "python -c \"from src.evaluate import EvaluateModel; EvaluateModel.load(name='EvaluateModel').run_and_save()\"\
       \ "
     deps:
     - path: nodes/MLModel/metrics_no_cache.json
-      md5: 56e5597328b76596d5cdb2b736833156
-      size: 190
+      md5: 369f751aad9b6138f96297355e0a53d3
+      size: 163
     - path: nodes/MLModel/model
-      md5: fcd0063b194513b4fecd50a6f43eb840.dir
-      size: 2541626
+      md5: 6a8da9f8608ccb5061e0e813f320bd0f.dir
+      size: 1491261
       nfiles: 4
     - path: nodes/MLModel/training_history.csv
-      md5: 4ee0834f65d99210fe7f5ef0ffffaf20
-      size: 1659
+      md5: 631851438ba2a354524c7816ad93ef05
+      size: 1314
     - path: nodes/test_data/outs.json
       md5: 5eb9c135aeb36ebe84979901c29d648f
       size: 60933821
     outs:
     - path: nodes/EvaluateModel/confusion_matrix.csv
-      md5: 2f2b1aabdf8eef7b723d0cd7a42e1bb8
-      size: 71436
+      md5: ae741a77fe14d32403561409886c9e7a
+      size: 71454
     - path: nodes/EvaluateModel/metrics_no_cache.json
-      md5: 113b1b561eed9d0e2b854e18053a19d8
+      md5: 3d0b9bd60172c09caf4e65d9c7927cda
       size: 100
   test_data:
     cmd: "python -c \"from src.process import DataPreprocessor; DataPreprocessor.load(name='test_data').run_and_save()\"\
