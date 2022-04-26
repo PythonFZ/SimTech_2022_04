@@ -5,7 +5,7 @@ MLModel:
     - 8
     epochs: 10
     filters:
-    - 8
+    - 4
     optimizer: adam
 download_kaggle:
     dataset: datamunge/sign-language-mnist
