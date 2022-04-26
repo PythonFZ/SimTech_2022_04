@@ -3,7 +3,7 @@ DataPreprocessor:
 MLModel:
   dense:
   - 32
-  epochs: 3
+  epochs: 10
   filters:
   - 32
   - 32
