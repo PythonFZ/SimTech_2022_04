@@ -2,10 +2,10 @@ DataPreprocessor:
     dataset: sign_mnist_train
 MLModel:
     dense:
-    - 4
+    - 8
     epochs: 10
     filters:
-    - 4
+    - 8
     optimizer: adam
 download_kaggle:
     dataset: datamunge/sign-language-mnist
