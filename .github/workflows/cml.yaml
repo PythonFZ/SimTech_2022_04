@@ -22,8 +22,6 @@ jobs:
       - name: Set Credentials and Pull Data
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
-          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
         run: |
           dvc remote modify --local myremote access_key_id ${{ secrets.ACCESS_KEY_ID }}
           dvc remote modify --local myremote secret_access_key ${{ secrets.SECRET_ACCESS_KEY}}
@@ -33,6 +31,9 @@ jobs:
 
           dvc pull --run-cache
       - name: Run Stage
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
         run: |
           dvc repro
       - name: DVC Push to remote
