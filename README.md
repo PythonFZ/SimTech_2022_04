@@ -1,5 +1,6 @@
 [![DVC](https://img.shields.io/badge/-tracked-white.svg?logo=data-version-control&link=https://dvc.org/?utm_campaign=badge)](https://studio.iterative.ai/user/PythonFZ/views/SimTech_2022_04-gwu9ba191d)
  [![ZnTrack](https://img.shields.io/badge/Powered%20by-ZnTrack-%23007CB0)](https://zntrack.readthedocs.io/en/latest/)
+ [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/PythonFZ/SimTech_2022_04/HEAD)
   <!-- [![DagsHub](https://bit.ly/33Q1Dv9)](https://dagshub.com/PythonFZ/DVCExample) --> 
 # CML Worflow for Training a CNN Model using DVC/ZnTrack
 
