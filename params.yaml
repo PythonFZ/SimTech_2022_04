@@ -3,7 +3,7 @@ DataPreprocessor:
 MLModel:
     dense:
     - 4
-    epochs: 10
+    epochs: 20
     filters:
     - 4
     optimizer: adam
